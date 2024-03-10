@@ -2,6 +2,7 @@ package flight.reservation;
 
 import flight.reservation.flight.ScheduledFlight;
 import flight.reservation.order.FlightOrder;
+import flight.reservation.order.FlightOrderBuilder;
 import flight.reservation.order.Order;
 
 import java.util.ArrayList;
@@ -20,24 +21,24 @@ public class Customer {
         this.orders = new ArrayList<>();
     }
 
-    public FlightOrder createOrder(List<String> passengerNames, List<ScheduledFlight> flights, double price) {
+    public FlightOrder createOrder(List<Passenger> passengerNames, List<ScheduledFlight> flights, double price) {
+
         if (!isOrderValid(passengerNames, flights)) {
             throw new IllegalStateException("Order is not valid");
         }
-        FlightOrder order = new FlightOrder(flights);
-        order.setCustomer(this);
-        order.setPrice(price);
-        List<Passenger> passengers = passengerNames
-                .stream()
-                .map(Passenger::new)
-                .collect(Collectors.toList());
-        order.setPassengers(passengers);
-        order.getScheduledFlights().forEach(scheduledFlight -> scheduledFlight.addPassengers(passengers));
-        orders.add(order);
-        return order;
+
+        FlightOrderBuilder orderBuilder = new FlightOrderBuilder();
+        orderBuilder.reset();
+
+        return (orderBuilder.addCustomer(this)
+                    .addPrice(price)
+                    .addPassengers(passengerNames)
+                    .addScheduledFlights(flights)
+                    .build());
+
     }
 
-    private boolean isOrderValid(List<String> passengerNames, List<ScheduledFlight> flights) {
+    private boolean isOrderValid(List<Passenger> passengerNames, List<ScheduledFlight> flights) {
         boolean valid = true;
         valid = valid && !FlightOrder.getNoFlyList().contains(this.getName());
         valid = valid && passengerNames.stream().noneMatch(passenger -> FlightOrder.getNoFlyList().contains(passenger));
