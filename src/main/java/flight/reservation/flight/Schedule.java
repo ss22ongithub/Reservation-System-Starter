@@ -1,16 +1,21 @@
 package flight.reservation.flight;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 public class Schedule {
 
     private List<ScheduledFlight> scheduledFlights;
+    private FlightEventsManager eventsManager;
 
 
-    public Schedule() {
+    public Schedule(FlightEventsManager eventsManager) {
         scheduledFlights = new ArrayList<>();
+        this.eventsManager = eventsManager;
+
     }
 
     public List<ScheduledFlight> getScheduledFlights() {
@@ -18,8 +23,19 @@ public class Schedule {
     }
 
     public void scheduleFlight(Flight flight, Date date) {
-        ScheduledFlight scheduledFlight = new ScheduledFlight(flight.getNumber(), flight.getDeparture(), flight.getArrival(), flight.getAircraft(), date);
+        ScheduledFlight scheduledFlight = new ScheduledFlight(flight.getNumber(), flight.getDeparture(),
+                flight.getArrival(), flight.getAircraft(), date);
+
         scheduledFlights.add(scheduledFlight);
+
+        FlightEventInfo eventInfo = new FlightEventInfo(this.toString(),
+                new Timestamp(System.currentTimeMillis()));
+
+        eventsManager.notifyEvent(
+                FlightEvents.FLIGHT_SCHEDULED,
+                eventInfo );
+
+
     }
 
     public void removeFlight(Flight flight) {
@@ -33,6 +49,14 @@ public class Schedule {
             }
         }
         scheduledFlights.removeAll(tbr);
+
+        FlightEventInfo eventInfo = new FlightEventInfo(this.toString(),
+                new Timestamp(System.currentTimeMillis()));
+
+        eventsManager.notifyEvent(
+                FlightEvents.FLIGHT_REMOVED,
+                eventInfo );
+
     }
 
     public void removeScheduledFlight(ScheduledFlight flight) {
@@ -49,4 +73,5 @@ public class Schedule {
     public void clear() {
         scheduledFlights.clear();
     }
+
 }

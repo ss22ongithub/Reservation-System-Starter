@@ -1,14 +1,30 @@
 import flight.reservation.Airport;
+import flight.reservation.flight.FlightEventsManager;
 import flight.reservation.flight.Schedule;
 import flight.reservation.flight.Flight;
-import flight.reservation.plane.Helicopter;
-import flight.reservation.plane.PassengerDrone;
-import flight.reservation.plane.PassengerPlane;
+import flight.reservation.plane.*;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class Runner {
+
+    //TODO: Direct building the airports
+
+//    AirportBuilder airportBuilder = new AirportBuilder();
+//    airportBuilder.addName("Berlin Airport");
+//    airportBuilder.addCode("BER");
+//    airportBuilder.addLocation("Berline");
+//    Airport airport = airportBuilder.construct();
+
+
+
+//    static List<Airport> airports = Arrays.asList(
+//            new Airport("Berlin Airport", "BER", "Berlin, Berlin"),
+//            new Airport("Frankfurt Airport", "FRA", "Frankfurt, Hesse"),
+//            new Airport("Madrid Barajas Airport", "MAD", "Barajas, Madrid"),
+//           );
+
     static List<Airport> airports = Arrays.asList(
             new Airport("Berlin Airport", "BER", "Berlin, Berlin"),
             new Airport("Frankfurt Airport", "FRA", "Frankfurt, Hesse"),
@@ -20,13 +36,18 @@ public class Runner {
             new Airport("Chengdu Shuangliu International Airport", "CTU", "Shuangliu-Wuhou, Chengdu, Sichuan")
     );
 
-    static List<Object> aircrafts = Arrays.asList(
-            new PassengerPlane("A380"),
-            new PassengerPlane("A350"),
-            new PassengerPlane("Embraer 190"),
-            new PassengerPlane("Antonov AN2"),
-            new Helicopter("H1"),
-            new PassengerDrone("HypaHype")
+    static HelicopterFactory helicopterFactory = new HelicopterFactory();
+    static DroneFactory droneFactory = new DroneFactory();
+
+    static PlaneFactory planeFactory = new PlaneFactory();
+
+    static List<FlyingMachine> aircrafts = Arrays.asList(
+            planeFactory.createFlyingMachine("A380"),
+            planeFactory.createFlyingMachine("A350"),
+            planeFactory.createFlyingMachine("Embraer 190"),
+            planeFactory.createFlyingMachine("Antonov AN2"),
+            helicopterFactory.createFlyingMachine("H1"),
+            droneFactory.createFlyingMachine("HypaHype")
     );
 
     static List<Flight> flights = Arrays.asList(
@@ -38,7 +59,8 @@ public class Runner {
             new Flight(6, airports.get(5), airports.get(7), aircrafts.get(5))
     );
 
-    static Schedule schedule;
+    FlightEventsManager flightEventsManager = new FlightEventsManager();
+    Schedule schedule = new Schedule(flightEventsManager);
 
     public static void main(String[] args) {
     }
